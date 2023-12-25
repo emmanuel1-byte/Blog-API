@@ -1,0 +1,59 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int            @id @default(autoincrement())
+  fullname     String
+  email        String         @unique
+  role         Role           @default(User)
+  password     String
+  created_at   DateTime       @default(now())
+  updated_at   DateTime       @updatedAt
+  Blog         Blog[]
+  Token        Token[]
+  Invalidtoken Invalidtoken[]
+}
+
+model Blog {
+  id         Int      @id @default(autoincrement())
+  title      String
+  content    String
+  author     User?    @relation(fields: [author_id], references: [id])
+  author_id  Int? @unique
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model Token {
+  id         Int      @id @default(autoincrement())
+  token      String
+  token_type String
+  user       User?     @relation(fields: [user_id], references: [id])
+  user_id    Int? @unique
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model Invalidtoken {
+  id         Int      @id @default(autoincrement())
+  token      String
+  user       User?     @relation(fields: [user_id], references: [id])
+  user_id    Int? @unique
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+enum Role {
+  User
+  Author
+  Admin
+}
